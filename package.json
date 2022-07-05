@@ -4,7 +4,7 @@
   "description": "A node script to signup to a particular badminton social that uses a web apps for signup registrations.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --watch"
   },
   "author": "Franky Cheung",
   "license": "ISC",
@@ -13,6 +13,7 @@
     "jest": "^28.1.2"
   },
   "dependencies": {
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "yargs": "^17.5.1"
   }
 }
