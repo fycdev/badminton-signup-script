@@ -13,7 +13,7 @@ const getNames = async () => {
   return data.split('\n');
 };
 
-const registerNames = async () => {
+const loadPage = async () => {
   // Initialise puppeteer
   console.log('Loading browser...');
   const puppeteer = require('puppeteer');
@@ -34,6 +34,22 @@ const registerNames = async () => {
   await pendingXHR.waitForAllXhrFinished();
   console.log('Page loaded.');
 
+  return { browser, page, pendingXHR };
+};
+
+/**
+ * @param {Browser} browser
+ */
+const cleanup = async browser => {
+  await browser.close();
+  console.log('Registering finished.');
+};
+
+/**
+ * @param {Page} page
+ * @param {PendingXHR} pendingXHR
+ */
+const registerNames = async (page, pendingXHR) => {
   // Get input fields and register button
   const personInput = await page.$('#person');
   const mobileInput = await page.$('#mobile');
@@ -52,14 +68,12 @@ const registerNames = async () => {
     await pendingXHR.waitForAllXhrFinished();
     console.log('%s registered.', name);
   }
-
-  // Cleanup
-  await browser.close();
-  console.log('Registering finished.')
 };
 
 if (process.env.NODE_ENV !== 'test') {
-  registerNames();
+  const { browser, page, pendingXHR } = await loadPage();
+  await registerNames(page, pendingXHR);
+  await cleanup(browser);
 }
 
 module.exports = { getNames };
