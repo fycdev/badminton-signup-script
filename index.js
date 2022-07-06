@@ -46,18 +46,17 @@ const cleanup = async browser => {
 };
 
 /**
+ * @param {string[]} names
  * @param {Page} page
  * @param {PendingXHR} pendingXHR
  */
-const registerNames = async (page, pendingXHR) => {
+const registerNames = async (names, page, pendingXHR) => {
   // Get input fields and register button
   const personInput = await page.$('#person');
   const mobileInput = await page.$('#mobile');
   const registerButton = await page.$('[name=Register]');
 
   // Get names and register them
-  const names = await getNames();
-
   for (const name of names) {
     console.log('Registering %s...', name);
     await personInput.click({ clickCount: 3 });
@@ -70,10 +69,39 @@ const registerNames = async (page, pendingXHR) => {
   }
 };
 
-if (process.env.NODE_ENV !== 'test') {
-  const { browser, page, pendingXHR } = await loadPage();
-  await registerNames(page, pendingXHR);
-  await cleanup(browser);
-}
+const run = async () => {
+  if (process.env.NODE_ENV !== 'test') {
+    const schedule = require('node-schedule');
+    const names = await getNames();
+    let browser;
+    let page;
+    let pendingXHR;
+
+    const jobLoad = schedule.scheduleJob('59 9 * * 2', async () => {
+      console.log('Browser');
+      const loaded = await loadPage();
+      browser = loaded.browser;
+      page = loaded.page;
+      pendingXHR = loaded.pendingXHR;
+      jobLoad.cancel();
+    });
+
+    const jobRegister = schedule.scheduleJob('2 0 10 * * 2', async function () {
+      await registerNames(names, page, pendingXHR);
+      await cleanup(browser);
+      jobRegister.cancel();
+    });
+
+    console.log('Browser will run at %s', jobLoad.nextInvocation().toString());
+    console.log(
+      'Registration will run at %s',
+      jobRegister.nextInvocation().toString()
+    );
+    console.log('Names list:');
+    console.log(...names);
+  }
+};
+
+run();
 
 module.exports = { getNames };

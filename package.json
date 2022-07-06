@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.1",
+    "node-schedule": "^2.1.0",
     "pending-xhr-puppeteer": "^2.3.3",
     "puppeteer": "^15.3.0",
     "yargs": "^17.5.1"
