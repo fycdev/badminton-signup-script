@@ -1,22 +1,28 @@
-require('dotenv').config();
+import 'dotenv/config';
 
 describe('Required environment variables', () => {
-  it('are present', () => {
+  it('should be present', () => {
     const environmentKeys = Object.keys(process.env);
     expect(environmentKeys).toEqual(
-      expect.arrayContaining(['BG_WEBSITE', 'BG_USER', 'BG_PASS'])
+      expect.arrayContaining(['BG_WEBSITE', 'BG_USER', 'BG_PASS', 'BG_MOBILE'])
     );
   });
 });
 
-describe('getNames', () => {
+describe('Names list', () => {
+  const originalArgv = process.argv;
+
   beforeEach(() => {
-    jest.resetModules();
+    process.argv.push('--names', './tests/names.test.txt');
   });
 
-  it('return list of names as an array', async () => {
+  afterEach(() => {
+    process.argv = originalArgv;
+  });
+
+  it('should output an array of names', async () => {
     const { getNames } = require('../index');
-    expect(await getNames('./tests/testnames.txt')).toMatchInlineSnapshot(`
+    expect(await getNames()).toMatchInlineSnapshot(`
 Array [
   "Julius",
   "Augustus",
