@@ -17,55 +17,45 @@ const registerNames = async () => {
   // Initialise puppeteer
   console.log('Loading browser...');
   const puppeteer = require('puppeteer');
+  const { PendingXHR } = require('pending-xhr-puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  console.log('Browser loaded');
+  const pendingXHR = new PendingXHR(page);
+  console.log('Browser loaded.');
 
   // Loading signup page
-  console.log('Loading page', process.env.BG_WEBSITE);
+  console.log('Loading page %s...', process.env.BG_WEBSITE);
   await page.authenticate({
     username: process.env.BG_USER,
     password: process.env.BG_PASS
   });
   await page.goto(process.env.BG_WEBSITE);
   await page.waitForNetworkIdle();
-  console.log('Page loaded');
+  await pendingXHR.waitForAllXhrFinished();
+  console.log('Page loaded.');
 
   // Get input fields and register button
   const personInput = await page.$('#person');
   const mobileInput = await page.$('#mobile');
   const registerButton = await page.$('[name=Register]');
-  // const unregisterButton = await page.$('[name=Unregister]');
 
+  // Get names and register them
   const names = await getNames();
 
   for (const name of names) {
-    console.log('Inputting name:', name);
+    console.log('Registering %s...', name);
     await personInput.click({ clickCount: 3 });
     await personInput.type(name);
+    await mobileInput.click({ clickCount: 3 });
     await mobileInput.type(process.env.BG_MOBILE);
     await registerButton.click();
-    console.log('Click registration button');
-    await page.waitForNetworkIdle();
-    console.log('Network idling finished');
+    await pendingXHR.waitForAllXhrFinished();
+    console.log('%s registered.', name);
   }
 
-  const acceptedNames = await page.$$eval(
-    'td.w2ui-grid-data[col="1"] div',
-    divs => {
-      return divs.map(div => div.textContent);
-    }
-  );
-
-  const waitingNames = await page.$$eval(
-    'td.w2ui-grid-data[col="3"] div',
-    divs => {
-      return divs.map(div => div.textContent);
-    }
-  );
-  console.log(acceptedNames, waitingNames);
-
+  // Cleanup
   await browser.close();
+  console.log('Registering finished.')
 };
 
 if (process.env.NODE_ENV !== 'test') {
