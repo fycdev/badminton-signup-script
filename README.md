@@ -4,7 +4,7 @@ A script that takes a list of names and programatically registers each name to a
 The script when executed will schedule the registration for the next Tuesday 10:00am AEST.
 
 ## How to use
-Navigate to the directory of the script and run it with node.
+Navigate to the directory of the script and run it with node. Run `npm install` if haven't already.
 ```
 node . --names path/to/names.txt
 ```
@@ -21,3 +21,5 @@ Environment variables are used for credentials and the website address and are p
 - Replace the names list with `.json` to have both name and mobile number so people can unregister themselves
 - Refactor with constants to make it easier to track DOM incase the website alters in any way.
 - Open a `puppeteer` page per person so that requests can be made concurrently instead of sequentially.
+- Refine and create better tests.
+- Optimise tooling such as linting.
