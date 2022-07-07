@@ -2,6 +2,10 @@
   "name": "badminton-signup-script",
   "version": "1.0.0",
   "description": "A node script to signup to a particular badminton social that uses a web apps for signup registrations.",
+  "engines": {
+    "node": "16.15.0",
+    "npm": "8.5.5"
+  },
   "main": "index.js",
   "scripts": {
     "test": "jest --watch"
