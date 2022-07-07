@@ -86,7 +86,7 @@ const run = async () => {
       jobLoad.cancel();
     });
 
-    const jobRegister = schedule.scheduleJob('2 0 10 * * 3', async function () {
+    const jobRegister = schedule.scheduleJob('1 10 * * 3', async function () {
       await registerNames(names, page, pendingXHR);
       await cleanup(browser);
       jobRegister.cancel();
